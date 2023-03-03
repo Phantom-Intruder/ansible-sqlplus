@@ -1,0 +1,48 @@
+---
+# tasks file for sqlplus
+
+- name: Add alien
+  apt:
+    name: alien
+    state: present
+
+- name: Download sql basic
+  ansible.builtin.get_url:
+    url: https://download.oracle.com/otn_software/linux/instantclient/219000/oracle-instantclient-basic-21.9.0.0.0-1.el8.x86_64.rpm
+    dest: basic.rpm
+    mode: '0440'
+
+- name: Download sql devel
+  ansible.builtin.get_url:
+    url: https://download.oracle.com/otn_software/linux/instantclient/219000/oracle-instantclient-devel-21.9.0.0.0-1.el8.x86_64.rpm
+    dest: devel.rpm
+    mode: '0440'
+
+- name: Download sqlplus
+  ansible.builtin.get_url:
+    url: https://download.oracle.com/otn_software/linux/instantclient/219000/oracle-instantclient-sqlplus-21.9.0.0.0-1.el8.x86_64.rpm
+    dest: sqlplus.rpm
+    mode: '0440'
+
+- name: Install libaio1
+  apt:
+    name: libaio1
+    state: present
+
+- name: Create oracle.conf
+  copy:
+    dest: "/etc/ld.so.conf.d/oracle.conf"
+    content: |
+      /usr/lib/oracle/11.2/client64/lib/ 
+
+- name: install basic
+  shell: sudo alien -i basic.rpm
+
+- name: install sqlplus
+  shell: sudo alien -i sqlplus.rpm
+
+- name: install devel
+  shell: sudo alien -i devel.rpm
+
+- name: Update configuration
+  shell: sudo ldconfig
